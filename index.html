@@ -308,21 +308,17 @@
 
         function handleCakeClick() {
             const cake = document.querySelector('.big-cake');
-            const hurtSound = document.getElementById('hurtSound');
+            
 
             // 🔴 MAKE CAKE TURN RED
             cake.classList.add('cake-red');
             setTimeout(() => cake.classList.remove('cake-red'), 200);
 
             // 🔊 PLAY MINECRAFT HURT SOUND
-            hurtSound.currentTime = 0;
-            hurtSound.play();
+            
 
             cakeClicks++;
-            if (cakeClicks === 2) {
-                window.alert("sorry")
-
-            }
+            
         }
 
         /* ——— (YOUR REMAINING CODE IS UNCHANGED BELOW) ——— */
