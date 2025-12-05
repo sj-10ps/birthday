@@ -55,6 +55,17 @@
             transform: scale(0) rotate(0deg);
             display: inline-block;
             animation: cakeBounce 1.2s ease forwards;
+            cursor: pointer;
+            transition: transform 0.2s ease, filter 0.2s ease;
+        }
+
+        /* 🔴 RED CAKE EFFECT WHEN CLICKED */
+        .cake-red {
+            filter: hue-rotate(-50deg) saturate(2) brightness(1.2);
+        }
+
+        .big-cake:hover {
+            transform: scale(1.1) rotate(5deg);
         }
 
         @keyframes cakeBounce {
@@ -151,19 +162,8 @@
             50% { transform: scale(0.95); }
         }
 
-        .confetti {
-            position: fixed;
-            width: 10px;
-            height: 10px;
-            background: #f0f;
-            position: absolute;
-            animation: confettiFall 3s linear forwards;
-        }
-
         @keyframes confettiFall {
-            0% {
-                opacity: 1;
-            }
+            0% { opacity: 1; }
             100% {
                 transform: translateY(100vh) rotate(720deg);
                 opacity: 0;
@@ -186,9 +186,28 @@
                 opacity: 0;
             }
         }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: scale(0.5); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes cloudFloat {
+            0% { transform: translateX(-50px); }
+            50% { transform: translateX(50px); }
+            100% { transform: translateX(-50px); }
+        }
+
+        .clouds {
+            animation: cloudFloat 6s ease-in-out infinite;
+        }
     </style>
 </head>
+
 <body>
+    <!-- 🔊 Minecraft Hurt Sound -->
+    <audio id="hurtSound" src="https://cdn.jsdelivr.net/gh/itskdhere/mc-sounds@main/hurt.mp3"></audio>
+
     <div class="container">
         <div class="message" id="message"></div>
         <div class="cake-container" id="cakeContainer"></div>
@@ -223,7 +242,6 @@
                 clickCount++;
                 updateButtonText();
 
-                // After "TEDDY", show teddy emoji
                 if (clickCount === words.length) {
                     setTimeout(() => {
                         const teddy = document.createElement('span');
@@ -231,15 +249,14 @@
                         teddy.textContent = '🧸';
                         message.appendChild(teddy);
 
-                        // After teddy, show big cake at bottom automatically
                         setTimeout(() => {
                             const cakeContainer = document.getElementById('cakeContainer');
                             const cake = document.createElement('div');
                             cake.className = 'big-cake';
                             cake.textContent = '🎂';
+                            cake.onclick = handleCakeClick;
                             cakeContainer.appendChild(cake);
 
-                            // Start birthday pop
                             createConfetti();
                             createBalloons();
                             btn.style.display = 'none';
@@ -255,16 +272,14 @@
             for (let i = 0; i < 150; i++) {
                 setTimeout(() => {
                     const confetti = document.createElement('div');
-                    confetti.className = 'confetti';
+                    confetti.style.position = 'fixed';
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
                     confetti.style.left = Math.random() * 100 + 'vw';
                     confetti.style.top = '-10px';
                     confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                    confetti.style.width = Math.random() * 10 + 5 + 'px';
-                    confetti.style.height = Math.random() * 10 + 5 + 'px';
-                    confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
-                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    confetti.style.animation = `confettiFall ${Math.random() * 2 + 2}s linear`;
                     document.body.appendChild(confetti);
-
                     setTimeout(() => confetti.remove(), 4000);
                 }, i * 20);
             }
@@ -287,6 +302,160 @@
                     setTimeout(() => balloonEl.remove(), 4500);
                 }, index * 300);
             });
+        }
+
+        let cakeClicks = 0;
+
+        function handleCakeClick() {
+            const cake = document.querySelector('.big-cake');
+            const hurtSound = document.getElementById('hurtSound');
+
+            // 🔴 MAKE CAKE TURN RED
+            cake.classList.add('cake-red');
+            setTimeout(() => cake.classList.remove('cake-red'), 200);
+
+            // 🔊 PLAY MINECRAFT HURT SOUND
+            hurtSound.currentTime = 0;
+            hurtSound.play();
+
+            cakeClicks++;
+            if (cakeClicks === 2) {
+                startSpecialSequence();
+            }
+        }
+
+        /* ——— (YOUR REMAINING CODE IS UNCHANGED BELOW) ——— */
+
+        function startSpecialSequence() {
+            document.getElementById('message').style.display = 'none';
+            document.getElementById('cakeContainer').style.display = 'none';
+
+            const cloudsContainer = document.createElement('div');
+            cloudsContainer.id = 'specialContainer';
+            cloudsContainer.style.position = 'fixed';
+            cloudsContainer.style.top = '0';
+            cloudsContainer.style.left = '0';
+            cloudsContainer.style.width = '100%';
+            cloudsContainer.style.height = '100%';
+            cloudsContainer.style.display = 'flex';
+            cloudsContainer.style.justifyContent = 'center';
+            cloudsContainer.style.alignItems = 'center';
+            cloudsContainer.style.flexDirection = 'column';
+            cloudsContainer.style.zIndex = '100';
+            document.body.appendChild(cloudsContainer);
+
+            const cloudsTop = document.createElement('div');
+            cloudsTop.className = 'clouds';
+            cloudsTop.style.position = 'absolute';
+            cloudsTop.style.top = '20px';
+            cloudsTop.style.fontSize = '3rem';
+            cloudsTop.style.whiteSpace = 'nowrap';
+            cloudsTop.innerHTML = '☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️ ☁️';
+            cloudsContainer.appendChild(cloudsTop);
+
+            setTimeout(() => createDiamonds(), 500);
+
+            setTimeout(() => {
+                cloudsContainer.innerHTML = '';
+                cloudsContainer.appendChild(cloudsTop);
+
+                const t1 = document.createElement('div');
+                t1.className = 'special-text';
+                t1.textContent = 'Wotahh drops are like diamonds 😁';
+                t1.style.fontSize = '2.5rem';
+                t1.style.color = '#fff';
+                t1.style.fontFamily = 'Pacifico, cursive';
+                t1.style.textShadow = '3px 3px 6px rgba(0,0,0,0.5)';
+                t1.style.animation = 'fadeIn 1s ease';
+                cloudsContainer.appendChild(t1);
+            }, 1500);
+
+            setTimeout(() => {
+                cloudsContainer.innerHTML = '';
+                cloudsContainer.appendChild(cloudsTop);
+
+                const t2 = document.createElement('div');
+                t2.className = 'special-text';
+                t2.textContent = 'Maths, Physics and Chemistry are my enemies ⚔️';
+                t2.style.fontSize = '2.5rem';
+                t2.style.color = '#fff';
+                t2.style.fontFamily = 'Pacifico, cursive';
+                t2.style.textShadow = '3px 3px 6px rgba(0,0,0,0.5)';
+                t2.style.textAlign = 'center';
+                t2.style.animation = 'fadeIn 1s ease';
+                cloudsContainer.appendChild(t2);
+            }, 4500);
+
+            setTimeout(() => {
+                cloudsContainer.innerHTML = '';
+                cloudsContainer.appendChild(cloudsTop);
+
+                const t3 = document.createElement('div');
+                t3.className = 'special-text';
+                t3.textContent = '2090+10=300 👻';
+                t3.style.fontSize = '3rem';
+                t3.style.color = '#fff';
+                t3.style.fontFamily = 'Pacifico, cursive';
+                t3.style.textShadow = '3px 3px 6px rgba(0,0,0,0.5)';
+                t3.style.animation = 'fadeIn 1s ease';
+                cloudsContainer.appendChild(t3);
+            }, 7500);
+
+            setTimeout(() => {
+                cloudsContainer.innerHTML = '';
+                cloudsContainer.appendChild(cloudsTop);
+
+                const t4 = document.createElement('div');
+                t4.className = 'special-text';
+                t4.textContent = 'OK BYE ᯓ🏃🏻‍♀️‍➡️';
+                t4.style.fontSize = '3rem';
+                t4.style.color = '#fff';
+                t4.style.fontFamily = 'Pacifico, cursive';
+                t4.style.textShadow = '3px 3px 6px rgba(0,0,0,0.5)';
+                t4.style.animation = 'fadeIn 1s ease';
+                cloudsContainer.appendChild(t4);
+            }, 10500);
+
+            setTimeout(() => {
+                cloudsContainer.remove();
+                resetBirthdayScreen();
+            }, 13500);
+        }
+
+        function createDiamonds() {
+            const cloudTopY = 80;
+
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const diamond = document.createElement('div');
+                    diamond.textContent = '💎';
+                    diamond.style.position = 'fixed';
+                    diamond.style.fontSize = '2rem';
+                    diamond.style.left = (10 + Math.random() * 80) + 'vw';
+                    diamond.style.top = cloudTopY + 'px';
+                    diamond.style.animation = 'confettiFall 3s linear forwards';
+                    diamond.style.zIndex = '101';
+                    document.body.appendChild(diamond);
+                    setTimeout(() => diamond.remove(), 3000);
+                }, i * 60);
+            }
+        }
+
+        function resetBirthdayScreen() {
+            clickCount = 0;
+            cakeClicks = 0;
+
+            const message = document.getElementById('message');
+            message.innerHTML = '';
+            message.style.display = 'flex';
+
+            const cakeContainer = document.getElementById('cakeContainer');
+            cakeContainer.innerHTML = '';
+            cakeContainer.style.display = 'block';
+
+            const btn = document.getElementById('celebrateBtn');
+            btn.style.display = 'block';
+            updateButtonText();
         }
     </script>
 </body>
