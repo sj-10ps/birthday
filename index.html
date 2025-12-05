@@ -206,7 +206,7 @@
 
 <body>
     <!-- 🔊 Minecraft Hurt Sound -->
-    
+    <audio id="hurtSound" src="https://cdn.jsdelivr.net/gh/itskdhere/mc-sounds@main/hurt.mp3"></audio>
 
     <div class="container">
         <div class="message" id="message"></div>
@@ -308,17 +308,20 @@
 
         function handleCakeClick() {
             const cake = document.querySelector('.big-cake');
-            
+            const hurtSound = document.getElementById('hurtSound');
 
             // 🔴 MAKE CAKE TURN RED
             cake.classList.add('cake-red');
             setTimeout(() => cake.classList.remove('cake-red'), 200);
 
             // 🔊 PLAY MINECRAFT HURT SOUND
-            
+            hurtSound.currentTime = 0;
+            hurtSound.play();
 
             cakeClicks++;
-            
+            if (cakeClicks === 2) {
+                startSpecialSequence();
+            }
         }
 
         /* ——— (YOUR REMAINING CODE IS UNCHANGED BELOW) ——— */
